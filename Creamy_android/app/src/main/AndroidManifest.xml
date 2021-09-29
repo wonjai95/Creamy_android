@@ -4,6 +4,8 @@
 
     <!--추가시작-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 인터넷 연결 확인-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!--추가종료-->
 
     <application
@@ -25,6 +27,7 @@
         <activity android:name=".Activity.MyPageMainActivity" />
         <activity android:name=".Activity.MyPageUserActivity"/>
         <activity android:name=".Activity.JoinActivity" />
+        <activity android:name=".Activity.DaumActivity" />
         <!--추가종료-->
 
     </application>

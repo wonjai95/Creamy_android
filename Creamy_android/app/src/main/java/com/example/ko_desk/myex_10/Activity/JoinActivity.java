@@ -24,6 +24,9 @@ import com.example.ko_desk.myex_10.Web;
 import com.google.gson.Gson;
 
 import android.text.TextWatcher;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,11 +36,16 @@ import java.util.Map;
 
 public class JoinActivity extends AppCompatActivity {
 
+    // 주소 요청코드 상수 requestCode
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
+
     EditText edtId, edtPw,edtName, edtEmail;
 
     EditText edtIdPhone;
     EditText editBirth;
-    Button btn_selectDate, btn_Join;
+    EditText editzipcode, editAddress;
+    TextView editsido, editgugun;
+    Button btn_selectDate, btn_Join,btn_selectAddress;
 
     private DatePickerDialog.OnDateSetListener callbackMethod;
 
@@ -54,10 +62,17 @@ public class JoinActivity extends AppCompatActivity {
         edtIdPhone = (EditText) findViewById(R.id.edt_ph);
         edtIdPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
+        editzipcode = (EditText) findViewById(R.id.edt_zipcode);
+        editsido = (TextView) findViewById(R.id.tv_sido);
+        editgugun = (TextView) findViewById(R.id.tv_gugun);
+        editAddress = (EditText) findViewById(R.id.edt_address);
+
+
         editBirth = (EditText) findViewById(R.id.edt_birth);
         btn_selectDate = (Button) findViewById(R.id.btn_selectDate);
 
         btn_Join = (Button) findViewById(R.id.btn_join);
+        btn_selectAddress = (Button) findViewById(R.id.btn_selectAddress);
 
         // DatePickerDialog
         final DatePickerDialog dialog = new DatePickerDialog(this, listener, 2021, 9, 22);
@@ -84,6 +99,32 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
+        btn_selectAddress.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(JoinActivity.this,DaumActivity.class);
+                startActivityForResult(intent,SEARCH_ADDRESS_ACTIVITY);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i("test","onActivityResult");
+
+        switch (requestCode){
+            case SEARCH_ADDRESS_ACTIVITY:
+                if(resultCode == RESULT_OK){
+                    String Address =data.getExtras().getString("address");
+                    if(data != null){
+                        Log.i("address :" ,Address);
+                        editAddress.setText(Address);
+                    }
+                }
+                break;
+        }
     }
 
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
@@ -98,10 +139,54 @@ public class JoinActivity extends AppCompatActivity {
     public class InnerTask extends AsyncTask<Map,Integer,String>{
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
         protected String doInBackground(Map... maps) {
-            return null;
+
+            //Http 요청 준비 -> 스프링 url 호출 -> window.location같은느낌
+            HttpClient.Builder http = new HttpClient.Builder("POST",Web.servletURL+"Join");
+            http.addAllParameters(maps[0]);
+
+            //스프링으로 보내버리기
+            HttpClient post = http.create();
+            post.request();
+
+            //스프링 갔다왔음...컨트롤러에서 return map 한거 가져옴
+            String body = post.getBody();
+            Log.d("body -> ",body);
+            return body;
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d("JSON_RESULT : ",s);
+
+            if(s.length() > 0){
+                Gson gson = new Gson();
+                Data data = gson.fromJson(s,Data.class);
+
+                try{
+                    if(data.getData3().equals("1")){
+                        Toast.makeText(getApplicationContext(),"회원가입 성공",Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(),"회원가입 실패, 다시시도하세요",Toast.LENGTH_SHORT).show();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            //insert(회원가입) 성공하든 안하든 메인화면으로 이동
+            Intent intent = new Intent(JoinActivity.this,SignInActivity.class);
+            startActivity(intent);
+
         }
     }
 
-}
 
+}

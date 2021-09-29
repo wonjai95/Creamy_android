@@ -23,6 +23,9 @@ public class MemberVO {
     private String bank_code;
     private String user_id;
 
+    private String sido;
+    private String gugun;
+
 
     //나중에 조인할거..있으면추가
 
@@ -113,5 +116,16 @@ public class MemberVO {
     public void setUser_ph(String user_ph) {
         this.user_ph = user_ph;
     }
-
+    public String getSido() {
+        return sido;
+    }
+    public void setSido(String sido) {
+        this.sido = sido;
+    }
+    public String getGugun() {
+        return gugun;
+    }
+    public void setGugun(String gugun) {
+        this.gugun = gugun;
+    }
 }
