@@ -46,6 +46,6 @@ public class DaumActivity extends AppCompatActivity {
             }
         });
 
-        browser.loadUrl("http://192.168.219.116/Creamy_CRM/android/daum");
+        browser.loadUrl("http://192.168.35.47/Creamy_CRM/android/daum");
     }
 }

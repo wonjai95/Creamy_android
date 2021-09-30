@@ -94,6 +94,7 @@ public class JoinActivity extends AppCompatActivity {
                 map.put("email",edtEmail.getText().toString());
                 map.put("phone",edtIdPhone.getText().toString());
                 map.put("birth",editBirth.getText().toString());
+                map.put("address",editAddress.getText().toString());
                 task.execute(map);   // doInBackground() 실행 // id, pwd 값 들고 execute 실행하라
 
             }
